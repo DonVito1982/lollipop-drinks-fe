@@ -1,25 +1,19 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Flex, Grid, Text } from "@chakra-ui/react";
-import { getDrinks, getStatus, takeDrink } from "../api";
+import { getDrinks, getStatus } from "../api";
 import DrinkBox from "./DrinkBox";
-
-function DrinkButton({ drinkId, onEmit }) {
-  const handleTake = async () => {
-    await takeDrink(drinkId);
-    onEmit();
-  };
-  return <Button onClick={handleTake}>Take one</Button>;
-}
 
 function AuthenticatedView({ user, onLogout }) {
   const [drinks, setDrinks] = useState([]);
-  const [drinkStatus, setDrinkStatus] = useState({});
+  const [remainingDrinks, setRemainingDrinks] = useState({});
+  const [caffeineLastDay, setCaffeineLastDay] = useState(0)
 
   const fetchStatus = async () => {
     const token = localStorage.getItem("token");
     try {
       const status = await getStatus(token);
-      setDrinkStatus(status.drinks_left);
+      setRemainingDrinks(status.drinks_left);
+      setCaffeineLastDay(status.caffeine_status.last_day)
     } catch (err) {
       console.error("Failed to fetch drinks");
     }
@@ -31,7 +25,7 @@ function AuthenticatedView({ user, onLogout }) {
       const drinksData = await getDrinks(token);
       setDrinks(drinksData);
     } catch (err) {
-      console.err("Failed to fetch drinks");
+      console.error("Failed to fetch drinks");
     }
   };
 
@@ -55,17 +49,16 @@ function AuthenticatedView({ user, onLogout }) {
       </Flex>
 
       <Text align="center" p={4}>
-        Some text
+        In the last day you've had {caffeineLastDay} mg of caffeine
       </Text>
-      <Grid templateColumns="300px 200px 90px" gap={4} p={4}>
+      <Grid templateColumns="300px 200px 80px" gap={4} p={4}>
         {drinks.map((drink) => (
-          <>
-            <DrinkBox key={drink.id} drink={drink} />
-            <Box>
-              <Text>You can have {drinkStatus[drink.id]} more of these</Text>
-            </Box>
-            <DrinkButton drinkId={drink.id} onEmit={updateInfo} />
-          </>
+          <DrinkBox
+            key={drink.id}
+            drink={drink}
+            quantity={remainingDrinks[drink.id]}
+            onEmit={updateInfo}
+          />
         ))}
       </Grid>
     </Box>
