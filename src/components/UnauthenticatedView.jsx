@@ -1,5 +1,6 @@
 import { Box, Button, Flex, Image, useDisclosure } from "@chakra-ui/react";
 import AuthModal from "./AuthModal";
+import welcomeImage from "../assets/welcome.jpeg"
 
 function UnauthenticatedView({ setUser }) {
   const {
@@ -25,7 +26,7 @@ function UnauthenticatedView({ setUser }) {
 
       <Flex justify="center" align="center" height="80vh">
         <Image
-          src="https://via.placeholder.com/800x400"
+          src={welcomeImage}
           alt="Welcome image"
           maxH="60vh"
         />
