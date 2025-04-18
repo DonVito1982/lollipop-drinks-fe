@@ -13,8 +13,7 @@ import {
   ModalOverlay,
   VStack,
 } from "@chakra-ui/react";
-
-const API_BASE = "http://localhost:3000";
+import { signup, login } from "../api";
 
 function AuthModal({ isOpen, onClose, setUser, type }) {
   const [form, setForm] = useState({});
@@ -23,22 +22,19 @@ function AuthModal({ isOpen, onClose, setUser, type }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = () => {
-    const endpoint = type === "signup" ? "/users" : "/auth/login";
-    fetch(`${API_BASE}${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("user", JSON.stringify(data.user));
-          setUser(data.user);
-          onClose();
-        }
-      });
+  const handleSubmit = async () => {
+    try {
+      const data = type === "signup" ? await signup(form) : await login(form);
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setUser(data.user);
+        onClose();
+      }
+    } catch (error) {
+      console.error(`${type} failed:`, error);
+    }
   };
 
   return (
