@@ -1,23 +1,48 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Flex, Text } from "@chakra-ui/react";
-import { getDrinks } from "../api";
-import DrinkBox from "./DrinkBox"
+import { Box, Button, Flex, Grid, Text } from "@chakra-ui/react";
+import { getDrinks, getStatus, takeDrink } from "../api";
+import DrinkBox from "./DrinkBox";
+
+function DrinkButton({ drinkId, onEmit }) {
+  const handleTake = () => {
+    takeDrink(drinkId)
+    onEmit()
+  }
+  return <Button onClick={handleTake}>Take one</Button>;
+}
 
 function AuthenticatedView({ user, onLogout }) {
   const [drinks, setDrinks] = useState([]);
+  const [drinkStatus, setDrinkStatus] = useState({});
+
+  const fetchStatus = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const status = await getStatus(token);
+      setDrinkStatus(status.drinks_left);
+      // setDrinks(drinksData);
+    } catch (err) {
+      console.err("Failed to fetch drinks");
+    }
+  };
+
+  const fetchDrinks = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const drinksData = await getDrinks(token);
+      setDrinks(drinksData);
+    } catch (err) {
+      console.err("Failed to fetch drinks");
+    }
+  };
+
+  const updateInfo = async () => {
+    console.log("Updating in main")
+  }
 
   useEffect(() => {
-    const fetchDrinks = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const drinksData = await getDrinks(token);
-        setDrinks(drinksData);
-      } catch (err) {
-        console.err("Failed to fetch drinks");
-      }
-    };
-
     fetchDrinks();
+    fetchStatus();
   }, []);
 
   return (
@@ -30,11 +55,20 @@ function AuthenticatedView({ user, onLogout }) {
         <Button onClick={onLogout}>Logout</Button>
       </Flex>
 
-      <Flex direction="column" align="center" p={4} gap={4}>
+      <Text align="center" p={4}>
+        Some text
+      </Text>
+      <Grid templateColumns="300px 200px 90px" gap={4} p={4}>
         {drinks.map((drink) => (
-          <DrinkBox drink={drink} />
+          <>
+            <DrinkBox key={drink.id} drink={drink} />
+            <Box>
+              <Text>You can have {drinkStatus[drink.id]} more of these</Text>
+            </Box>
+            <DrinkButton drinkId={drink.id} onEmit={updateInfo} />
+          </>
         ))}
-      </Flex>
+      </Grid>
     </Box>
   );
 }
