@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
-
-const API_BASE = "http://localhost:3000";
+import { getDrinks } from "../api";
+import DrinkBox from "./DrinkBox"
 
 function AuthenticatedView({ user, onLogout }) {
   const [drinks, setDrinks] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    fetch(`${API_BASE}/drinks`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then(setDrinks);
+    const fetchDrinks = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const drinksData = await getDrinks(token);
+        setDrinks(drinksData);
+      } catch (err) {
+        console.err("Failed to fetch drinks");
+      }
+    };
+
+    fetchDrinks();
   }, []);
 
   return (
@@ -29,19 +32,7 @@ function AuthenticatedView({ user, onLogout }) {
 
       <Flex direction="column" align="center" p={4} gap={4}>
         {drinks.map((drink) => (
-          <Box
-            key={drink.id}
-            p={4}
-            borderWidth="1px"
-            borderRadius="md"
-            shadow="md"
-          >
-            <Text fontSize="lg" fontWeight="bold">
-              {drink.name}
-            </Text>
-            <Text>Caffeine per serving: {drink.serv_caffeine}mg</Text>
-            <Text>Number of servings: {drink.serv_count}</Text>
-          </Box>
+          <DrinkBox drink={drink} />
         ))}
       </Flex>
     </Box>
