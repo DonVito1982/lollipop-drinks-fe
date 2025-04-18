@@ -23,15 +23,13 @@ export async function getDrinks(token) {
 export async function takeDrink(drinkId) {
   const headers = {
     "Content-Type": "application/json",
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
   };
-  const body = {drink_id: {drinkId}}
+  const body = { drink_id: drinkId }
   const response = await fetch(`${API_BASE}/user_drinks`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: body,
+    headers: headers,
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
@@ -41,7 +39,6 @@ export async function takeDrink(drinkId) {
   return await response.json();
 }
 
-// POST /user_drinks(.:format) user_drinks#create
 export async function signup(userData) {
   const response = await fetch(`${API_BASE}/users`, {
     method: "POST",

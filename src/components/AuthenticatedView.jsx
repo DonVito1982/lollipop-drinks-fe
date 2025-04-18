@@ -4,10 +4,10 @@ import { getDrinks, getStatus, takeDrink } from "../api";
 import DrinkBox from "./DrinkBox";
 
 function DrinkButton({ drinkId, onEmit }) {
-  const handleTake = () => {
-    takeDrink(drinkId)
-    onEmit()
-  }
+  const handleTake = async () => {
+    await takeDrink(drinkId);
+    onEmit();
+  };
   return <Button onClick={handleTake}>Take one</Button>;
 }
 
@@ -16,13 +16,12 @@ function AuthenticatedView({ user, onLogout }) {
   const [drinkStatus, setDrinkStatus] = useState({});
 
   const fetchStatus = async () => {
+    const token = localStorage.getItem("token");
     try {
-      const token = localStorage.getItem("token");
       const status = await getStatus(token);
       setDrinkStatus(status.drinks_left);
-      // setDrinks(drinksData);
     } catch (err) {
-      console.err("Failed to fetch drinks");
+      console.error("Failed to fetch drinks");
     }
   };
 
@@ -36,9 +35,9 @@ function AuthenticatedView({ user, onLogout }) {
     }
   };
 
-  const updateInfo = async () => {
-    console.log("Updating in main")
-  }
+  const updateInfo = () => {
+    fetchStatus();
+  };
 
   useEffect(() => {
     fetchDrinks();
