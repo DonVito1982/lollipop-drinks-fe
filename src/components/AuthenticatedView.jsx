@@ -1,6 +1,22 @@
+import { useEffect, useState } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 
-function AuthenticatedView({ user, onLogout, drinks }) {
+const API_BASE = "http://localhost:3000";
+
+function AuthenticatedView({ user, onLogout }) {
+  const [drinks, setDrinks] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    fetch(`${API_BASE}/drinks`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then(setDrinks);
+  }, []);
+
   return (
     <Box>
       <Flex justify="space-between" p={4} shadow="md">
