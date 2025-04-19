@@ -1,7 +1,11 @@
 const API_BASE = "http://localhost:3000";
 
-export async function getStatus(token) {
-  const headers = { headers: { Authorization: `Bearer ${token}` } };
+function getToken() {
+  return localStorage.getItem("token")
+}
+
+export async function getStatus() {
+  const headers = { headers: { Authorization: `Bearer ${getToken()}` } };
   const response = await fetch(`${API_BASE}/status`, headers);
 
   if (!response.ok) {
@@ -10,8 +14,8 @@ export async function getStatus(token) {
   return await response.json();
 }
 
-export async function getDrinks(token) {
-  const headers = { headers: { Authorization: `Bearer ${token}` } };
+export async function getDrinks() {
+  const headers = { headers: { Authorization: `Bearer ${getToken()}` } };
   const response = await fetch(`${API_BASE}/drinks`, headers);
 
   if (!response.ok) {
@@ -23,9 +27,9 @@ export async function getDrinks(token) {
 export async function takeDrink(drinkId) {
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
+    Authorization: `Bearer ${getToken()}`,
   };
-  const body = { drink_id: drinkId }
+  const body = { drink_id: drinkId };
   const response = await fetch(`${API_BASE}/user_drinks`, {
     method: "POST",
     headers: headers,
@@ -67,6 +71,9 @@ export async function login(credentials) {
   if (!response.ok) {
     throw new Error("Login failed");
   }
+  const parsedResponse = await response.json();
+  localStorage.setItem("token", parsedResponse.token);
+  localStorage.setItem("user", JSON.stringify(parsedResponse.user));
 
-  return await response.json();
+  return parsedResponse;
 }
