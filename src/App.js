@@ -2,15 +2,23 @@ import { useEffect, useState } from "react";
 import { ChakraProvider, CSSReset } from "@chakra-ui/react";
 import AuthenticatedView from "./components/AuthenticatedView";
 import UnauthenticatedView from "./components/UnauthenticatedView";
+import { getMe } from "./api";
 
 function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    async function checkUser() {
+      try {
+        const userData = await getMe();
+        setUser(userData);
+      } catch (error) {
+        localStorage.removeItem("token");
+      }
+    }
     if (token) {
-      const storedUser = JSON.parse(localStorage.getItem("user"));
-      setUser(storedUser);
+      checkUser();
     }
   }, []);
 

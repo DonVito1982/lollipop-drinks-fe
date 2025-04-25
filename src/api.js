@@ -1,7 +1,18 @@
 const API_BASE = "http://localhost:3000";
 
 function getToken() {
-  return localStorage.getItem("token")
+  return localStorage.getItem("token");
+}
+
+export async function getMe() {
+  const headers = { headers: { Authorization: `Bearer ${getToken()}` } };
+  const response = await fetch(`${API_BASE}/me`, headers);
+
+  if (!response.ok) {
+    console.log("Threw error");
+    throw new Error("Failed to fetch user");
+  }
+  return await response.json();
 }
 
 export async function getStatus() {
