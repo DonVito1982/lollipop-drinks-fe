@@ -21,6 +21,7 @@ function UnauthenticatedView({ setUser }) {
     onOpen: onSignupOpen,
     onClose: onSignupClose,
   } = useDisclosure();
+
   const welcomeUser = (user) => {
     setUser(user);
     toast({
