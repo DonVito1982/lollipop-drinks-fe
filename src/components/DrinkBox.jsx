@@ -24,7 +24,7 @@ function DrinkBox({ drink, quantity, onEmit }) {
       <Box>
         <Text>{drinkText}</Text>
       </Box>
-      <Button onClick={handleTake} isDisabled={quantity == 0}>
+      <Button onClick={handleTake} isDisabled={quantity === 0}>
         Take one
       </Button>
     </>

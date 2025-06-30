@@ -1,8 +1,16 @@
-import { Box, Button, Flex, Image, useDisclosure } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Image,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import AuthModal from "./AuthModal";
-import welcomeImage from "../assets/welcome.jpeg"
+import welcomeImage from "../assets/welcome.jpeg";
 
 function UnauthenticatedView({ setUser }) {
+  const toast = useToast();
   const {
     isOpen: isLoginOpen,
     onOpen: onLoginOpen,
@@ -13,6 +21,15 @@ function UnauthenticatedView({ setUser }) {
     onOpen: onSignupOpen,
     onClose: onSignupClose,
   } = useDisclosure();
+  const welcomeUser = (user) => {
+    setUser(user);
+    toast({
+      title: `Welcome ${user.first_name}!`,
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+  };
 
   return (
     <Box>
@@ -25,23 +42,19 @@ function UnauthenticatedView({ setUser }) {
       </Flex>
 
       <Flex justify="center" align="center" height="80vh">
-        <Image
-          src={welcomeImage}
-          alt="Welcome image"
-          maxH="60vh"
-        />
+        <Image src={welcomeImage} alt="Welcome image" maxH="60vh" />
       </Flex>
 
       <AuthModal
         isOpen={isLoginOpen}
         onClose={onLoginClose}
-        setUser={setUser}
+        setUser={welcomeUser}
         type="login"
       />
       <AuthModal
         isOpen={isSignupOpen}
         onClose={onSignupClose}
-        setUser={setUser}
+        setUser={welcomeUser}
         type="signup"
       />
     </Box>

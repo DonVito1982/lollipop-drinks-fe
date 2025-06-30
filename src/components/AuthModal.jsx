@@ -11,12 +11,14 @@ import {
   ModalHeader,
   ModalFooter,
   ModalOverlay,
+  Text,
   VStack,
 } from "@chakra-ui/react";
 import { signup, login } from "../api";
 
 function AuthModal({ isOpen, onClose, setUser, type }) {
   const [form, setForm] = useState({});
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -27,13 +29,13 @@ function AuthModal({ isOpen, onClose, setUser, type }) {
       const data = type === "signup" ? await signup(form) : await login(form);
 
       if (data.token) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
         onClose();
+        setErrorMessage(null);
       }
     } catch (error) {
       console.error(`${type} failed:`, error);
+      setErrorMessage("Could not login");
     }
   };
 
@@ -65,6 +67,11 @@ function AuthModal({ isOpen, onClose, setUser, type }) {
               <FormLabel>Password</FormLabel>
               <Input name="password" type="password" onChange={handleChange} />
             </FormControl>
+            {errorMessage && (
+              <Text color="red.500" mb={3}>
+                {errorMessage}
+              </Text>
+            )}
           </VStack>
         </ModalBody>
         <ModalFooter>

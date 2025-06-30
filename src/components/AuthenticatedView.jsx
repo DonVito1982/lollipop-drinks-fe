@@ -9,9 +9,8 @@ function AuthenticatedView({ user, onLogout }) {
   const [caffeineLastDay, setCaffeineLastDay] = useState(0)
 
   const fetchStatus = async () => {
-    const token = localStorage.getItem("token");
     try {
-      const status = await getStatus(token);
+      const status = await getStatus();
       setRemainingDrinks(status.drinks_left);
       setCaffeineLastDay(status.caffeine_status.last_day)
     } catch (err) {
@@ -21,8 +20,7 @@ function AuthenticatedView({ user, onLogout }) {
 
   const fetchDrinks = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const drinksData = await getDrinks(token);
+      const drinksData = await getDrinks();
       setDrinks(drinksData);
     } catch (err) {
       console.error("Failed to fetch drinks");
